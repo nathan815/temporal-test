@@ -27,7 +27,7 @@ func main() {
 	}
 
 	// Start the Workflow
-	duration := 12 * time.Hour
+	duration := 30 * time.Second
 	we, err := c.ExecuteWorkflow(context.Background(), options, sleepingwf.SleepingWorkflow, duration)
 	if err != nil {
 		log.Fatalln("unable to complete Workflow", err)
