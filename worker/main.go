@@ -23,7 +23,7 @@ func main() {
 	w := worker.New(c, config.MainTaskQueue, worker.Options{})
 	w.RegisterWorkflow(sleepingwf.SleepingWorkflow)
 	w.RegisterWorkflow(getpost.GetPostWithUser)
-	w.RegisterWorkflow(goroutinewf.BasicGoroutineWorkflow)
+	w.RegisterWorkflow(goroutinewf.ThreeStepGoroutineWorkflow)
 
 	w.RegisterActivity(getpost.GetPost)
 	w.RegisterActivity(getpost.GetUser)

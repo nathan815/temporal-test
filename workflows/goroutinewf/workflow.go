@@ -10,14 +10,7 @@ import (
 	"go.temporal.io/sdk/workflow"
 )
 
-/**
-* This sample workflow demonstrates how to use multiple Temporal gorotinues (instead of native goroutine) to process a
-* a sequence of activities in parallel.
-* In Temporal workflow, you should create goroutines using workflow.Go method.
- */
-
-// SampleGoroutineWorkflow workflow definition
-func BasicGoroutineWorkflow(ctx workflow.Context, parallelism int) (results []string, err error) {
+func ThreeStepGoroutineWorkflow(ctx workflow.Context, parallelism int) (results []string, err error) {
 	ao := workflow.ActivityOptions{
 		StartToCloseTimeout: 15 * time.Second,
 	}

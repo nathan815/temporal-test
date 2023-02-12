@@ -35,7 +35,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("int arg parallelism is invalid: %v", err)
 	}
-	we, err := c.ExecuteWorkflow(context.Background(), options, goroutinewf.BasicGoroutineWorkflow, parallelism)
+	we, err := c.ExecuteWorkflow(context.Background(), options, goroutinewf.ThreeStepGoroutineWorkflow, parallelism)
 	if err != nil {
 		log.Fatalln("unable to complete Workflow", err)
 	}
