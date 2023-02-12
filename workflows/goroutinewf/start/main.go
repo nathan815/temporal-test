@@ -23,7 +23,7 @@ func main() {
 	defer c.Close()
 
 	options := client.StartWorkflowOptions{
-		ID:        fmt.Sprintf("wf-%v", uuid.New()),
+		ID:        fmt.Sprintf("goroutinewf/%v", uuid.New()),
 		TaskQueue: config.MainTaskQueue,
 	}
 
@@ -37,7 +37,7 @@ func main() {
 	}
 	we, err := c.ExecuteWorkflow(context.Background(), options, goroutinewf.ThreeStepGoroutineWorkflow, parallelism)
 	if err != nil {
-		log.Fatalln("unable to complete Workflow", err)
+		log.Fatalln("unable to start workflow: ", err)
 	}
 
 	fmt.Println("Starting workflow...")
