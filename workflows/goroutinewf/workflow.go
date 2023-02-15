@@ -2,6 +2,7 @@ package goroutinewf
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"math/rand"
 	"time"
@@ -10,7 +11,11 @@ import (
 	"go.temporal.io/sdk/workflow"
 )
 
-func ThreeStepGoroutineWorkflow(ctx workflow.Context, parallelism int) (results []string, err error) {
+type ThreeStepGoroutineWorkflowInput struct {
+	Parallelism int
+}
+
+func ThreeStepGoroutineWorkflow(ctx workflow.Context, input ThreeStepGoroutineWorkflowInput) (results []string, err error) {
 	ao := workflow.ActivityOptions{
 		StartToCloseTimeout: 15 * time.Second,
 	}
@@ -18,7 +23,7 @@ func ThreeStepGoroutineWorkflow(ctx workflow.Context, parallelism int) (results 
 
 	errors := make([]error, 0)
 
-	for i := 0; i < parallelism; i++ {
+	for i := 0; i < input.Parallelism; i++ {
 		input1 := fmt.Sprint(i)
 
 		workflow.Go(ctx, func(gCtx workflow.Context) {
@@ -52,7 +57,7 @@ func ThreeStepGoroutineWorkflow(ctx workflow.Context, parallelism int) (results 
 	// The function is evaluated on every workflow state change. Consider using `workflow.AwaitWithTimeout` to
 	// limit duration of the wait.
 	_ = workflow.Await(ctx, func() bool {
-		return err != nil || len(results) == parallelism
+		return err != nil || len(results) == input.Parallelism
 	})
 	if len(errors) > 0 {
 		return nil, fmt.Errorf("error occurred: %v", errors)
@@ -66,6 +71,10 @@ func Step1(input string) (output string, err error) {
 }
 
 func Step2(input string) (output string, err error) {
+	if rand.Intn(2) == 1 {
+		return "", errors.New("step2 failure")
+	}
+
 	time.Sleep(time.Duration(rand.Intn(20)) * time.Second)
 	return "Step2 Input: (" + input + ")", nil
 }

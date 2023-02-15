@@ -9,23 +9,14 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/nathan815/temporal-hello-world/config"
+	"github.com/nathan815/temporal-hello-world/temporalext"
 	"github.com/nathan815/temporal-hello-world/workflows/goroutinewf"
 	"go.temporal.io/sdk/client"
 )
 
 func main() {
-
-	// Create the client object just once per process
-	c, err := client.Dial(client.Options{})
-	if err != nil {
-		log.Fatalln("unable to create Temporal client", err)
-	}
+	c := temporalext.NewClient()
 	defer c.Close()
-
-	options := client.StartWorkflowOptions{
-		ID:        fmt.Sprintf("goroutinewf/%v", uuid.New()),
-		TaskQueue: config.MainTaskQueue,
-	}
 
 	// Start the Workflow
 	if len(os.Args) < 2 {
@@ -35,7 +26,15 @@ func main() {
 	if err != nil {
 		log.Fatalf("int arg parallelism is invalid: %v", err)
 	}
-	we, err := c.ExecuteWorkflow(context.Background(), options, goroutinewf.ThreeStepGoroutineWorkflow, parallelism)
+
+	workflowOptions := client.StartWorkflowOptions{
+		ID:        fmt.Sprintf("goroutinewf/%v", uuid.New()),
+		TaskQueue: config.MainTaskQueue,
+	}
+	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, goroutinewf.ThreeStepGoroutineWorkflow, goroutinewf.ThreeStepGoroutineWorkflowInput{
+		Parallelism: parallelism,
+	})
+
 	if err != nil {
 		log.Fatalln("unable to start workflow: ", err)
 	}
